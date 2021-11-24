@@ -29,8 +29,7 @@ def main():
    # print("COunt> ", sales_given_commerce.count())
 
     
-    col1, col2, col3 = st.columns(3)
-
+    
     with st.expander("ver ventas por categoria del cp 04006"):
         aux = getCPSectorFilterDataset(spark,cards_dataset,'04006')
         for i in(aux)[1:]:
