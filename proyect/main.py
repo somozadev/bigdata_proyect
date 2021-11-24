@@ -30,13 +30,15 @@ def main():
    # sales_given_commerce.show(sales_given_commerce.count(),False)
    # print("COunt> ", sales_given_commerce.count())
 
-    
-    
-    with st.expander("ver ventas por categoria del cp 04006"):
-        aux = getCPSectorFilterDataset(spark,cards_dataset,'04006')
-        for i in(aux)[1:]:
-            st.write(i[1],(getPercentaje(i[0],int(aux[0][0]))), "%", i[0], "ventas")
-            st.progress(int(getPercentaje(i[0],int(aux[0][0]))))
+    DisplayDropdownsCPSector(spark, cards_dataset, '04001')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04002')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04003')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04004')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04005')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04006')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04007')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04008')
+    DisplayDropdownsCPSector(spark, cards_dataset, '04009')
 
     #printFilters(getSectorFiltersDataset(cards_dataset),cards_dataset.count())  #% de ventas por sector 
     with st.expander("ver ventas por sector"):
@@ -80,7 +82,15 @@ def ValueTypesSetup(database):
 def SectorPercentajePerCommerce(dataset): #hay  9 comercios (04001 - 04009)
     print("sector per commerce is: ", dataset.filter(F.col('CP_CLIENTE') == 'CP_CLIENTE').groupBy('CP_CLIENTE').count())
     
-
+def DisplayDropdownsCPSector(spark, cards_dataset,cp):
+    titulo = ("ver ventas por categoria del cp: {}".format(cp))
+    with st.expander(titulo):
+        aux = getCPSectorFilterDataset(spark,cards_dataset,cp)
+        st.write(cp ," ha tenido un total de ", aux[0][0] , "ventas")
+        for i in(aux)[1:]:
+            st.write(i[1],(getPercentaje(i[0],(aux[0][0]))), "%", i[0], "ventas")
+            st.progress(int(getPercentaje(i[0],(aux[0][0]))))
+    
 
 def getCPSectorFilterDataset(spark, cards_dataset, cp):
     sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == str(cp))# sales_given_commerce.createTempView('sales_given_commerce')
