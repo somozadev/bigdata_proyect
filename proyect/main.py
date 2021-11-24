@@ -25,24 +25,17 @@ def main():
    #dado un comercio se muestre porcentajes de ventas de cada categoria
    # 
    #     
-    sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == '04006')
    # sales_given_commerce.show(sales_given_commerce.count(),False)
    # print("COunt> ", sales_given_commerce.count())
 
-    sales_given_commerce.createTempView('sales_given_commerce')
-    num_alim = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'ALIMENTACION'").count() #num alimentacion
-    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num alimentacion
-    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num alimentacion
-    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num alimentacion
-    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num alimentacion
-    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num alimentacion
-    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num alimentacion
-    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num alimentacion
-    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num alimentacion
-    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num alimentacion
     
-    
+    col1, col2, col3 = st.columns(3)
 
+    with st.expander("ver ventas por categoria del cp 04006"):
+        aux = getCPSectorFilterDataset(spark,cards_dataset,'04006')
+        for i in(aux)[1:]:
+            st.write(i[1],(getPercentaje(i[0],int(aux[0][0]))), "%" ,"------------------------------------------------------------------",i[0]," ventas")
+            st.progress(int(getPercentaje(i[0],int(aux[0][0]))))
 
     #printFilters(getSectorFiltersDataset(cards_dataset),cards_dataset.count())  #% de ventas por sector 
     with st.expander("ver ventas por sector"):
@@ -75,7 +68,32 @@ def SectorPercentajePerCommerce(dataset): #hay  9 comercios (04001 - 04009)
     
 
 
-
+def getCPSectorFilterDataset(spark,cards_dataset, cp):
+    sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == str(cp))# sales_given_commerce.createTempView('sales_given_commerce')
+    num_alim = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'ALIMENTACION'").count() #num alimentacion
+    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num alimentacion
+    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num alimentacion
+    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num alimentacion
+    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num alimentacion
+    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num alimentacion
+    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num alimentacion
+    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num alimentacion
+    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num alimentacion
+    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num alimentacion
+    
+    cpSector_filters_dataset = [
+        (sales_given_commerce.count(),'CARDS'),
+        (num_alim, 'ALIMENTACION'),
+        (num_auto, 'AUTO'),
+        (num_belleza, 'BELLEZA'),
+        (num_hogar, 'HOGAR'),
+        (num_moda, 'MODA Y COMPLEMENTOS'),
+        (num_ocio, 'OCIO Y TIEMPO LIBRE'),
+        (num_otros, 'OTROS'),
+        (num_restauracion, 'RESTAURACION'),
+        (num_salud, 'SALUD'),
+        (num_tecnologia, 'TECNOLOGIA')]
+    return cpSector_filters_dataset
 
 
 
