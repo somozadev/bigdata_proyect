@@ -4,10 +4,12 @@ import streamlit as st
 import time
 import pyspark
 import folium
+import plotly.figure_factory as ff
 from pyspark.pandas.frame import CachedDataFrame
 from pyspark.sql import SparkSession, dataframe
 from pyspark.sql import functions as F
 from pyspark.sql.types import  DoubleType,IntegerType,StringType 
+
 @st.cache
 def run_fxn(n: int) -> list:
     return range(n)
@@ -33,7 +35,7 @@ def main():
     with st.expander("ver ventas por categoria del cp 04006"):
         aux = getCPSectorFilterDataset(spark,cards_dataset,'04006')
         for i in(aux)[1:]:
-            st.write(i[1],(getPercentaje(i[0],int(aux[0][0]))), "%" ,"------------------------------------------------------------------",i[0]," ventas")
+            st.write(i[1],(getPercentaje(i[0],int(aux[0][0]))), "%", i[0], "ventas")
             st.progress(int(getPercentaje(i[0],int(aux[0][0]))))
 
     #printFilters(getSectorFiltersDataset(cards_dataset),cards_dataset.count())  #% de ventas por sector 
@@ -52,7 +54,20 @@ def main():
     
 
      
-   #getSoldsByCommerce(cards_dataset,'04006')
+    #getSoldsByCommerce(cards_dataset,'04006')
+
+    #df = px.cards_dataset.tips()
+    #fig = px.histogram(df, x="Sectores")
+    #fig.show()
+
+    st.write(getCPSectorFilterDataset(spark, cards_dataset, '04006'))
+    hist_data = [[getCPSectorFilterDataset(spark, cards_dataset, '04006')['0']]]
+    group_labels = ['Ventas']
+
+    fig = ff.create_distplot(
+        hist_data, group_labels, bin_size=[10])
+    
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def ValueTypesSetup(database):
@@ -67,8 +82,9 @@ def SectorPercentajePerCommerce(dataset): #hay  9 comercios (04001 - 04009)
     
 
 
-def getCPSectorFilterDataset(spark,cards_dataset, cp):
+def getCPSectorFilterDataset(spark, cards_dataset, cp):
     sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == str(cp))# sales_given_commerce.createTempView('sales_given_commerce')
+    sales_given_commerce.createOrReplaceTempView("sales_given_commerce")
     num_alim = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'ALIMENTACION'").count() #num alimentacion
     num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num alimentacion
     num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num alimentacion
