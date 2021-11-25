@@ -30,14 +30,67 @@ def main():
     components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
     DisplayDropdownsCPSector(spark, cards_dataset, '04001')
+    #Grafica lineal de las ventas en el cp 04001
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04001'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04002')
+    #Grafica lineal de las ventas en el cp 04002
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04002'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04003')
+    #Grafica lineal de las ventas en el cp 04003
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04003'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04004')
+    #Grafica lineal de las ventas en el cp 04004
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04004'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04005')
+    #Grafica lineal de las ventas en el cp 04005
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04005'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04006')
+    #Grafica lineal de las ventas en el cp 04006
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04006'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04007')
+    #Grafica lineal de las ventas en el cp 04007
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04007'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04008')
+    #Grafica lineal de las ventas en el cp 04008
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04008'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04009')
+    #Grafica lineal de las ventas en el cp 04009
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04009'), columns = ['Ventas', 'Comercio'])
+    df = df.drop([0], axis=0)
+    fig = px.histogram(df, x = 'Comercio', y = 'Ventas', color = 'Comercio', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
 
     #printFilters(getSectorFiltersDataset(cards_dataset),cards_dataset.count())  #% de ventas por sector 
     with st.expander("Ver ventas por sector"):
@@ -57,10 +110,6 @@ def main():
      
     #getSoldsByCommerce(cards_dataset,'04006')
 
-    #Grafica lineal de las ventas en un cp
-    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04006'), columns = ['Ventas', 'Comercio'])
-    fig = px.line(df, x = 'Comercio', y = 'Ventas', title='Ventas')
-    st.plotly_chart(fig, use_container_width=True)
 
 
 def ValueTypesSetup(database):
