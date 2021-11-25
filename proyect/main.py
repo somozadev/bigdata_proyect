@@ -38,7 +38,7 @@ def main():
     DisplayDropdownsCPSector(spark, cards_dataset, '04009')
 
     #printFilters(getSectorFiltersDataset(cards_dataset),cards_dataset.count())  #% de ventas por sector 
-    with st.expander("ver ventas por sector"):
+    with st.expander("Ver ventas por sector"):
         for i in (getSectorFiltersDataset(cards_dataset))[1:]:
             st.write(i[1] ,(getPercentaje(i[0].count(), cards_dataset.count())), "%")
             st.progress(int(getPercentaje(i[0].count(), cards_dataset.count())))
@@ -46,7 +46,7 @@ def main():
               
 
     #printFilters(getCpComercioFiltersDataset(cards_dataset),cards_dataset.count()) #% de ventas por tienda (cp)
-    with st.expander("ver ventas por codigo postal"):
+    with st.expander("Ver ventas por codigo postal"):
         for i in (getCpComercioFiltersDataset(cards_dataset))[1:]:
             st.write(i[1],(getPercentaje(i[0].count(), cards_dataset.count())),"%")
             st.progress(int(getPercentaje(i[0].count(), cards_dataset.count())))
@@ -74,15 +74,17 @@ def ValueTypesSetup(database):
     return database
     
 def SectorPercentajePerCommerce(dataset): #hay  9 comercios (04001 - 04009)
-    print("sector per commerce is: ", dataset.filter(F.col('CP_CLIENTE') == 'CP_CLIENTE').groupBy('CP_CLIENTE').count())
+    print("Sector por comercio es: ", dataset.filter(F.col('CP_CLIENTE') == 'CP_CLIENTE').groupBy('CP_CLIENTE').count())
     
 def DisplayDropdownsCPSector(spark, cards_dataset,cp):
-    titulo = ("ver ventas por categoria del cp: {}".format(cp))
+    titulo = ("Ver ventas por categoría del CP: {}".format(cp))
     with st.expander(titulo):
         aux = getCPSectorFilterDataset(spark,cards_dataset,cp)
-        st.write(cp ," ha tenido un total de ", aux[0][0] , "ventas")
+        st.write(cp ," ha tenido un total de ", aux[0][0] , "ventas.")
         for i in(aux)[1:]:
-            st.write(i[1],(getPercentaje(i[0],(aux[0][0]))), "%", i[0], "ventas")
+            st.write(i[1],(getPercentaje(i[0],(aux[0][0]))), "%")
+            st.write("Con un total de", i[0], "ventas en esta categoría.")
+
             st.progress(int(getPercentaje(i[0],(aux[0][0]))))
  
 
@@ -90,15 +92,15 @@ def getCPSectorFilterDataset(spark, cards_dataset, cp):
     sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == str(cp))# sales_given_commerce.createTempView('sales_given_commerce')
     sales_given_commerce.createOrReplaceTempView("sales_given_commerce")
     num_alim = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'ALIMENTACION'").count() #num alimentacion
-    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num alimentacion
-    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num alimentacion
-    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num alimentacion
-    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num alimentacion
-    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num alimentacion
-    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num alimentacion
-    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num alimentacion
-    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num alimentacion
-    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num alimentacion
+    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num auto
+    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num belleza
+    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num hogar
+    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num moda
+    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num ocio
+    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num otros
+    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num restauracion
+    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num salud
+    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num tecnologia
     
     cpSector_filters_dataset = [
         (sales_given_commerce.count(),'CARDS'),
