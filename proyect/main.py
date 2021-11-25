@@ -9,9 +9,9 @@ import plotly.express as px
 import plotly.figure_factory as ff
 import altair as alt
 from pyspark.pandas.frame import CachedDataFrame
-from pyspark.sql import SparkSession, dataframe
+from pyspark.sql import SparkSession, column, dataframe
 from pyspark.sql import functions as F
-from pyspark.sql.types import  DoubleType,IntegerType,StringType 
+from pyspark.sql.types import  DateType, DoubleType,IntegerType,StringType 
 
 @st.cache
 def run_fxn(n: int) -> list:
@@ -22,8 +22,10 @@ def main():
   
     spark = SparkSession.builder.getOrCreate()
     cards_dataset = spark.read.csv('cards.csv',sep = '|', header = True)
+    weather_dataset = spark.read.csv('weather.csv', sep = ';', header = True)
 
     cards_dataset = ValueTypesSetup(cards_dataset)
+    weather_dataset = ValueTypesSetup_weather(weather_dataset)
 
     components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
@@ -67,6 +69,24 @@ def ValueTypesSetup(database):
     database = database.withColumn('IMPORTE', F.col('IMPORTE').cast(StringType()))
     database = database.withColumn('NUM_OP', F.col('NUM_OP').cast(IntegerType()))
     return database
+
+def ValueTypesSetup_weather(database_weather):
+    database_weather = database_weather.withColumn('FECHA', F.col('FECHA').cast(DateType()))
+    database_weather = database_weather.withColumn('DIA', F.col('DIA').cast(IntegerType()))
+    database_weather = database_weather.withColumn('TMax', F.col('TMax').cast(DoubleType()))    
+    database_weather = database_weather.withColumn('HTMax', F.col('HTMax').cast(DoubleType()))
+    database_weather = database_weather.withColumn('TMin', F.col('TMin').cast(DoubleType()))        
+    database_weather = database_weather.withColumn('HTMin', F.col('HTMin').cast(DoubleType()))
+    database_weather = database_weather.withColumn('TMed', F.col('TMed').cast(DoubleType()))
+    database_weather = database_weather.withColumn('HumMax', F.col('HumMax').cast(DoubleType()))
+    database_weather = database_weather.withColumn('HumMed', F.col('HumMed').cast(DoubleType()))
+    database_weather = database_weather.withColumn('VelViento', F.col('VelViento').cast(DoubleType()))
+    database_weather = database_weather.withColumn('DirViento', F.col('DirViento').cast(DoubleType()))
+    database_weather = database_weather.withColumn('Rad', F.col('Rad').cast(DoubleType()))
+    database_weather = database_weather.withColumn('Precip', F.col('Precip').cast(DoubleType()))
+    database_weather = database_weather.withColumn('ETo', F.col('ETo').cast(DoubleType()))
+    return database_weather
+
     
 def SectorPercentajePerCommerce(dataset): #hay  9 comercios (04001 - 04009)
     print("Sector por comercio es: ", dataset.filter(F.col('CP_CLIENTE') == 'CP_CLIENTE').groupBy('CP_CLIENTE').count())
