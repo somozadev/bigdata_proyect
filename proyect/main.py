@@ -50,7 +50,7 @@ def main():
               
 
     #printFilters(getCpComercioFiltersDataset(cards_dataset),cards_dataset.count()) #% de ventas por tienda (cp)
-    with st.expander("ver ventas por tienda"):
+    with st.expander("ver ventas por codigo postal"):
         for i in (getCpComercioFiltersDataset(cards_dataset))[1:]:
             st.write(i[1],(getPercentaje(i[0].count(), cards_dataset.count())),"%")
             st.progress(int(getPercentaje(i[0].count(), cards_dataset.count())))
