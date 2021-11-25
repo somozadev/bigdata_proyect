@@ -29,6 +29,9 @@ def main():
 
     components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
+    #Creacion de dataframes para la pesca de juntar los DataFrames
+    df1 = pd.DataFrame(getSectorFiltersDataset(cards_dataset), columns = ['Algo','Comercio']).drop(['Algo'],axis=1)
+
     DisplayDropdownsCPSector(spark, cards_dataset, '04001')
     #Grafica lineal de las ventas en el cp 04001
     df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04001'), columns = ['Ventas', 'Comercio'])
@@ -121,19 +124,8 @@ def ValueTypesSetup(database):
 
 def ValueTypesSetup_weather(database_weather):
     database_weather = database_weather.withColumn('FECHA', F.col('FECHA').cast(DateType()))
-    database_weather = database_weather.withColumn('DIA', F.col('DIA').cast(IntegerType()))
-    database_weather = database_weather.withColumn('TMax', F.col('TMax').cast(DoubleType()))    
-    database_weather = database_weather.withColumn('HTMax', F.col('HTMax').cast(DoubleType()))
-    database_weather = database_weather.withColumn('TMin', F.col('TMin').cast(DoubleType()))        
-    database_weather = database_weather.withColumn('HTMin', F.col('HTMin').cast(DoubleType()))
     database_weather = database_weather.withColumn('TMed', F.col('TMed').cast(DoubleType()))
-    database_weather = database_weather.withColumn('HumMax', F.col('HumMax').cast(DoubleType()))
-    database_weather = database_weather.withColumn('HumMed', F.col('HumMed').cast(DoubleType()))
-    database_weather = database_weather.withColumn('VelViento', F.col('VelViento').cast(DoubleType()))
-    database_weather = database_weather.withColumn('DirViento', F.col('DirViento').cast(DoubleType()))
-    database_weather = database_weather.withColumn('Rad', F.col('Rad').cast(DoubleType()))
     database_weather = database_weather.withColumn('Precip', F.col('Precip').cast(DoubleType()))
-    database_weather = database_weather.withColumn('ETo', F.col('ETo').cast(DoubleType()))
     return database_weather
 
     
