@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
+import streamlit.components.v1 as components
 import time
 import pyspark
 import folium
 import plotly.express as px
 import plotly.figure_factory as ff
 import altair as alt
-from streamlit_vega_lite import vega_lite_component, altair_component
 from pyspark.pandas.frame import CachedDataFrame
 from pyspark.sql import SparkSession, dataframe
 from pyspark.sql import functions as F
@@ -24,14 +24,8 @@ def main():
     cards_dataset = spark.read.csv('cards.csv',sep = '|', header = True)
 
     cards_dataset = ValueTypesSetup(cards_dataset)
-  #  cards_dataset.printSchema()
-    
-    
-   #dado un comercio se muestre porcentajes de ventas de cada categoria
-   # 
-   #     
-   # sales_given_commerce.show(sales_given_commerce.count(),False)
-   # print("COunt> ", sales_given_commerce.count())
+
+    components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
     
     
