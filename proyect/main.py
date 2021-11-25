@@ -59,20 +59,15 @@ def main():
      
     #getSoldsByCommerce(cards_dataset,'04006')
 
+    #Grafica lineal de las ventas en un cp
     df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04006'), columns = ['Ventas', 'Comercio'])
     fig = px.line(df, x = 'Comercio', y = 'Ventas', title='Ventas')
-    st.write(df)
     st.plotly_chart(fig, use_container_width=True)
 
-    '''st.write(getCPSectorFilterDataset(spark, cards_dataset, '04006'))
-    hist_data = [{[getCPSectorFilterDataset(spark, cards_dataset, '04006')]}]
-    group_labels = ['Ventas']
-
-    fig = ff.create_distplot(
-        hist_data, group_labels, bin_size=[10])
-    
-    st.plotly_chart(fig, use_container_width=True)'''
-
+    df = pd.DataFrame(getSectorFilterDataset(spark, cards_dataset), columns = ['Ventas', 'Comercio'])
+    st.write(df)
+    fig = px.line(df, x = 'Comercio', y = 'Ventas', title='Ventas')
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def ValueTypesSetup(database):
@@ -115,6 +110,33 @@ def getCPSectorFilterDataset(spark, cards_dataset, cp):
         (num_tecnologia, 'TECNOLOGIA')]
     return cpSector_filters_dataset
 
+def getSectorFilterDataset(spark, cards_dataset):
+    sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == 'CP_COMERCIO')# sales_given_commerce.createTempView('sales_given_commerce')
+    sales_given_commerce.createOrReplaceTempView("sales_given_commerce")
+    num_alim = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'ALIMENTACION'").count() #num alimentacion
+    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num alimentacion
+    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num alimentacion
+    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num alimentacion
+    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num alimentacion
+    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num alimentacion
+    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num alimentacion
+    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num alimentacion
+    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num alimentacion
+    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num alimentacion
+    
+    Sector_filters_dataset = [
+        (sales_given_commerce.count(),'CARDS'),
+        (num_alim, 'ALIMENTACION'),
+        (num_auto, 'AUTO'),
+        (num_belleza, 'BELLEZA'),
+        (num_hogar, 'HOGAR'),
+        (num_moda, 'MODA Y COMPLEMENTOS'),
+        (num_ocio, 'OCIO Y TIEMPO LIBRE'),
+        (num_otros, 'OTROS'),
+        (num_restauracion, 'RESTAURACION'),
+        (num_salud, 'SALUD'),
+        (num_tecnologia, 'TECNOLOGIA')]
+    return Sector_filters_dataset
 
 
 #region SECTOR % 
