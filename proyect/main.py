@@ -4,7 +4,10 @@ import streamlit as st
 import time
 import pyspark
 import folium
+import plotly.express as px
 import plotly.figure_factory as ff
+import altair as alt
+from streamlit_vega_lite import vega_lite_component, altair_component
 from pyspark.pandas.frame import CachedDataFrame
 from pyspark.sql import SparkSession, dataframe
 from pyspark.sql import functions as F
@@ -30,15 +33,13 @@ def main():
    # sales_given_commerce.show(sales_given_commerce.count(),False)
    # print("COunt> ", sales_given_commerce.count())
 
-    DisplayDropdownsCPSector(spark, cards_dataset, '04001')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04002')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04003')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04004')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04005')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04006')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04007')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04008')
-    DisplayDropdownsCPSector(spark, cards_dataset, '04009')
+    
+    
+    with st.expander("ver ventas por categoria del cp 04006"):
+        aux = getCPSectorFilterDataset(spark,cards_dataset,'04006')
+        for i in(aux)[1:]:
+            st.write(i[1],(getPercentaje(i[0],int(aux[0][0]))), "%", i[0], "ventas")
+            st.progress(int(getPercentaje(i[0],int(aux[0][0]))))
 
     #printFilters(getSectorFiltersDataset(cards_dataset),cards_dataset.count())  #% de ventas por sector 
     with st.expander("ver ventas por sector"):
@@ -58,18 +59,20 @@ def main():
      
     #getSoldsByCommerce(cards_dataset,'04006')
 
-    #df = px.cards_dataset.tips()
-    #fig = px.histogram(df, x="Sectores")
-    #fig.show()
+    df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04006'), columns = ['Ventas', 'Comercio'])
+    fig = px.line(df, x = 'Comercio', y = 'Ventas', title='Ventas')
+    st.write(df)
+    st.plotly_chart(fig, use_container_width=True)
 
-    st.write(getCPSectorFilterDataset(spark, cards_dataset, '04006'))
-    hist_data = [[getCPSectorFilterDataset(spark, cards_dataset, '04006')['0']]]
+    '''st.write(getCPSectorFilterDataset(spark, cards_dataset, '04006'))
+    hist_data = [{[getCPSectorFilterDataset(spark, cards_dataset, '04006')]}]
     group_labels = ['Ventas']
 
     fig = ff.create_distplot(
         hist_data, group_labels, bin_size=[10])
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)'''
+
 
 
 def ValueTypesSetup(database):
@@ -82,29 +85,21 @@ def ValueTypesSetup(database):
 def SectorPercentajePerCommerce(dataset): #hay  9 comercios (04001 - 04009)
     print("sector per commerce is: ", dataset.filter(F.col('CP_CLIENTE') == 'CP_CLIENTE').groupBy('CP_CLIENTE').count())
     
-def DisplayDropdownsCPSector(spark, cards_dataset,cp):
-    titulo = ("ver ventas por categoria del cp: {}".format(cp))
-    with st.expander(titulo):
-        aux = getCPSectorFilterDataset(spark,cards_dataset,cp)
-        st.write(cp ," ha tenido un total de ", aux[0][0] , "ventas")
-        for i in(aux)[1:]:
-            st.write(i[1],(getPercentaje(i[0],(aux[0][0]))), "%", i[0], "ventas")
-            st.progress(int(getPercentaje(i[0],(aux[0][0]))))
-    
+
 
 def getCPSectorFilterDataset(spark, cards_dataset, cp):
     sales_given_commerce = cards_dataset.filter(F.col('CP_COMERCIO') == str(cp))# sales_given_commerce.createTempView('sales_given_commerce')
     sales_given_commerce.createOrReplaceTempView("sales_given_commerce")
     num_alim = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'ALIMENTACION'").count() #num alimentacion
-    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num auto
-    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num belleza
-    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num hogar
-    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num moda y complementos
-    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num ocio y tiempo libre
-    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num otros
-    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num restauracion
-    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num salud
-    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num tecnologia
+    num_auto = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'AUTO'").count() #num alimentacion
+    num_belleza = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'BELLEZA'").count() #num alimentacion
+    num_hogar = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'HOGAR'").count() #num alimentacion
+    num_moda = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'MODA Y COMPLEMENTOS'").count() #num alimentacion
+    num_ocio = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OCIO Y TIEMPO LIBRE'").count() #num alimentacion
+    num_otros = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'OTROS'").count() #num alimentacion
+    num_restauracion = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'RESTAURACION'").count() #num alimentacion
+    num_salud = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'SALUD'").count() #num alimentacion
+    num_tecnologia = spark.sql("SELECT * FROM sales_given_commerce WHERE SECTOR == 'TECNOLOGIA'").count() #num alimentacion
     
     cpSector_filters_dataset = [
         (sales_given_commerce.count(),'CARDS'),
