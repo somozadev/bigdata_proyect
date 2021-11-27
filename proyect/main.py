@@ -27,7 +27,16 @@ def main():
     cards_dataset = ValueTypesSetup(cards_dataset)
     weather_dataset = ValueTypesSetup_weather(weather_dataset)
 
-    #st.write(getFechaRangoTemperatura(spark, 0.0, 5.0, weather_dataset))
+
+    listaDataframes = getFechaRangoTemperatura(spark, weather_dataset)
+
+    listaFechasRango0 = list(listaDataframes[0].select('FECHA').toPandas()['FECHA'])
+    listaFechasRango1 = list(listaDataframes[1].select('FECHA').toPandas()['FECHA'])
+    listaFechasRango2 = list(listaDataframes[2].select('FECHA').toPandas()['FECHA'])
+
+    #st.write(data[0].show(10))
+
+    #st.write(ventasTemperatura(spark, cards_dataset, weather_dataset))
 
     components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
@@ -101,7 +110,8 @@ def main():
             st.write(i[1] ,(getPercentaje(i[0].count(), cards_dataset.count())), "%")
             st.progress(int(getPercentaje(i[0].count(), cards_dataset.count())))
             
-              
+    
+
 
     #printFilters(getCpComercioFiltersDataset(cards_dataset),cards_dataset.count()) #% de ventas por tienda (cp)
     with st.expander("Ver ventas por codigo postal"):
@@ -190,19 +200,24 @@ def getSectorFiltersDataset(cards_dataset): #crea una lista de tuplas (dataset,n
 def getFechaRangoTemperatura(spark, weather_dataset):
     database = weather_dataset
     database.createOrReplaceTempView("database")
+    fechas0 = []
     fechas0 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 0.0 AND TMed < 10.0")
     fechas1 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 10.01 AND TMed < 20.0")
     fechas2 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 20.01 AND TMed < 30.0")
 
-    cpSector_filters_dataset = [
-        (database.count(),'CARDS'),
-        (fechas0, 'rango 0-10'),
-        (fechas1, 'rango 10-20'),
-        (fechas2, 'rango 20-30')]
+    #cpSector_filters_dataset = [
+    #    (fechas0, 'rango 0-10'),
+    #    (fechas1, 'rango 10-20'),
+    #    (fechas2, 'rango 20-30')]
+    cpSector_filters_dataset = []
+    cpSector_filters_dataset.append(fechas0)
+    cpSector_filters_dataset.append(fechas1)
+    cpSector_filters_dataset.append(fechas2)
     return cpSector_filters_dataset
 
-def ventasTemperatura(spark, fechas, cards_dataset, inta, intb, weather_dataset):
-    array_fechas = [getFechaRangoTemperatura(spark, weather_dataset)]
+
+def ventasTemperatura(spark, cards_dataset, weather_dataset):
+    fechas = getFechaRangoTemperatura(spark, weather_dataset)
     ventas = 0
     cards = cards_dataset
     cards.createOrReplaceTempView("cards")
