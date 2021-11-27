@@ -189,14 +189,6 @@ def getSectorFiltersDataset(cards_dataset): #crea una lista de tuplas (dataset,n
         (getDataframe_sectorFilter(cards_dataset,'TECNOLOGIA'),'TECNOLOGIA')]
 
     return sector_filters_dataset
-def getTempFiltersDataset(weather_dataset): #crea una lista de tuplas (dataset,nombre) del dataset
-    temp_filters_dataset = [
-        (weather_dataset, 'WHEATER'),
-        (getDataframe_fechaFilter(weather_dataset,'FECHA'),'FECHA'), 
-        (getDataframe_fechaFilter(weather_dataset,'TMed'),'TMed'),
-        (getDataframe_fechaFilter(weather_dataset,'Precip'),'Precip')]
-
-    return temp_filters_dataset
 
 def getFechaRangoTemperatura(spark, inta, intb, weather_dataset):
     database = weather_dataset
