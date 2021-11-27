@@ -38,6 +38,16 @@ def main():
     ventas1 = ventasTemperatura(spark, cards_dataset, listaFechasRango1)
     ventas2 = ventasTemperatura(spark, cards_dataset, listaFechasRango2)
 
+    df_ventas = pd.DataFrame(columns=['Temperatura', 'Ventas'])
+    temperatura = ['0-10', '10.01-20', '20.01-30']
+    ventas = [ventas0, ventas1, ventas2]
+
+    df_ventas['Temperatura'] = temperatura
+    df_ventas['Ventas'] = ventas
+
+    fig2 = px.pie(df_ventas, values='Ventas', names='Temperatura')
+    st.plotly_chart(fig2, use_container_width=True)
+
     #st.write(data[0].show(10))
 
     #st.write(ventasTemperatura(spark, cards_dataset, weather_dataset))
