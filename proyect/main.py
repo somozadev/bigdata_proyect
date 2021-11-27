@@ -27,11 +27,11 @@ def main():
     cards_dataset = ValueTypesSetup(cards_dataset)
     weather_dataset = ValueTypesSetup_weather(weather_dataset)
 
+    st.write(getFechaRangoTemperatura(spark, 0.0, 5.0, weather_dataset))
+
     components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
     #Creacion de dataframes para la pesca de juntar los DataFrames
-    df1 = pd.DataFrame(getSectorFiltersDataset(cards_dataset), columns = ['Algo','Comercio']).drop(['Algo'],axis=1)
-
     DisplayDropdownsCPSector(spark, cards_dataset, '04001')
     #Grafica lineal de las ventas en el cp 04001
     df = pd.DataFrame(getCPSectorFilterDataset(spark, cards_dataset, '04001'), columns = ['Ventas', 'Comercio'])
@@ -189,6 +189,31 @@ def getSectorFiltersDataset(cards_dataset): #crea una lista de tuplas (dataset,n
         (getDataframe_sectorFilter(cards_dataset,'TECNOLOGIA'),'TECNOLOGIA')]
 
     return sector_filters_dataset
+def getTempFiltersDataset(weather_dataset): #crea una lista de tuplas (dataset,nombre) del dataset
+    temp_filters_dataset = [
+        (weather_dataset, 'WHEATER'),
+        (getDataframe_fechaFilter(weather_dataset,'FECHA'),'FECHA'), 
+        (getDataframe_fechaFilter(weather_dataset,'TMed'),'TMed'),
+        (getDataframe_fechaFilter(weather_dataset,'Precip'),'Precip')]
+
+    return temp_filters_dataset
+
+def getFechaRangoTemperatura(spark, inta, intb, weather_dataset):
+    database = weather_dataset
+    database.createOrReplaceTempView("database")
+    fechas = spark.sql("SELECT FECHA FROM database WHERE TMed >= %i AND TMed < %i", (inta, intb))
+    return fechas
+
+def ventasTemperatura(spark, fechas, cards_dataset, inta, intb, weather_dataset):
+    array_fechas = [getFechaRangoTemperatura(spark, inta, intb, weather_dataset)]
+    ventas = 0
+    cards = cards_dataset
+    cards.createOrReplaceTempView("cards")
+    for fecha in fechas:
+        absa = spark.sql("SELECT * FROM cards WHERE FECHA = %s", (fecha)).count()
+        ventas += absa
+    return ventas
+
 def getDataframe_sectorFilter(dataset, filter): #filtra el sector de la dataset dada en base al tipo (filter) pasado
     return dataset.filter(F.col('SECTOR') == filter)
 #endregion
