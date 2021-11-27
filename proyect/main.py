@@ -34,8 +34,10 @@ def main():
     listaFechasRango1 = list(listaDataframes[1].select('FECHA').toPandas()['FECHA'])
     listaFechasRango2 = list(listaDataframes[2].select('FECHA').toPandas()['FECHA'])
 
-    ea = ventasTemperatura(spark, cards_dataset, listaFechasRango0)
-    st.write(ea)
+    ventas0 = ventasTemperatura(spark, cards_dataset, listaFechasRango0)
+    ventas1 = ventasTemperatura(spark, cards_dataset, listaFechasRango1)
+    ventas2 = ventasTemperatura(spark, cards_dataset, listaFechasRango2)
+
     #st.write(data[0].show(10))
 
     #st.write(ventasTemperatura(spark, cards_dataset, weather_dataset))
@@ -219,9 +221,6 @@ def ventasTemperatura(spark, cards_dataset, arrayFechas):
     cards = cards_dataset
     cards.createOrReplaceTempView("cards")
     for fecha in arrayFechas:
-        print(fecha)
-        print(type(fecha))
-
         year = fecha.strftime("%Y")
         month = fecha.strftime("%m")
         day = fecha.strftime("%d")
