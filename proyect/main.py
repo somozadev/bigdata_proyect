@@ -43,7 +43,7 @@ def main():
 
 
     df_ventas = pd.DataFrame(columns=['Temperatura', 'Ventas'])
-    temperatura = ['0-15', '15.01-20', '20.01-25', '25.01-30']
+    temperatura = ['0°C-15°C', '15.01°C-20°C', '20.01°C-25°C', '25.01°C-30°C']
     ventas = [ventas0, ventas1, ventas2, ventas3]
 
     df_ventas['Temperatura'] = temperatura
