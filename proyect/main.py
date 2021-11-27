@@ -33,14 +33,18 @@ def main():
     listaFechasRango0 = list(listaDataframes[0].select('FECHA').toPandas()['FECHA'])
     listaFechasRango1 = list(listaDataframes[1].select('FECHA').toPandas()['FECHA'])
     listaFechasRango2 = list(listaDataframes[2].select('FECHA').toPandas()['FECHA'])
+    listaFechasRango3 = list(listaDataframes[3].select('FECHA').toPandas()['FECHA'])
+
 
     ventas0 = ventasTemperatura(spark, cards_dataset, listaFechasRango0)
     ventas1 = ventasTemperatura(spark, cards_dataset, listaFechasRango1)
     ventas2 = ventasTemperatura(spark, cards_dataset, listaFechasRango2)
+    ventas3 = ventasTemperatura(spark, cards_dataset, listaFechasRango3)
+
 
     df_ventas = pd.DataFrame(columns=['Temperatura', 'Ventas'])
-    temperatura = ['0-10', '10.01-20', '20.01-30']
-    ventas = [ventas0, ventas1, ventas2]
+    temperatura = ['0-15', '15.01-20', '20.01-25', '25.01-30']
+    ventas = [ventas0, ventas1, ventas2, ventas3]
 
     df_ventas['Temperatura'] = temperatura
     df_ventas['Ventas'] = ventas
@@ -215,14 +219,17 @@ def getFechaRangoTemperatura(spark, weather_dataset):
     database = weather_dataset
     database.createOrReplaceTempView("database")
     fechas0 = []
-    fechas0 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 0.0 AND TMed < 10.0")
-    fechas1 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 10.01 AND TMed < 20.0")
-    fechas2 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 20.01 AND TMed < 30.0")
+    fechas0 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 0.0 AND TMed < 15.0")
+    fechas1 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 15.01 AND TMed < 20.0")
+    fechas2 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 20.01 AND TMed < 25.0")
+    fechas3 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 25.01 AND TMed < 30.0")
 
     cpSector_filters_dataset = []
     cpSector_filters_dataset.append(fechas0)
     cpSector_filters_dataset.append(fechas1)
     cpSector_filters_dataset.append(fechas2)
+    cpSector_filters_dataset.append(fechas3)
+
     return cpSector_filters_dataset
 
 
