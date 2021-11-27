@@ -34,6 +34,8 @@ def main():
     listaFechasRango1 = list(listaDataframes[1].select('FECHA').toPandas()['FECHA'])
     listaFechasRango2 = list(listaDataframes[2].select('FECHA').toPandas()['FECHA'])
 
+    ea = ventasTemperatura(spark, cards_dataset, listaFechasRango0)
+    st.write(ea)
     #st.write(data[0].show(10))
 
     #st.write(ventasTemperatura(spark, cards_dataset, weather_dataset))
@@ -205,10 +207,6 @@ def getFechaRangoTemperatura(spark, weather_dataset):
     fechas1 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 10.01 AND TMed < 20.0")
     fechas2 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 20.01 AND TMed < 30.0")
 
-    #cpSector_filters_dataset = [
-    #    (fechas0, 'rango 0-10'),
-    #    (fechas1, 'rango 10-20'),
-    #    (fechas2, 'rango 20-30')]
     cpSector_filters_dataset = []
     cpSector_filters_dataset.append(fechas0)
     cpSector_filters_dataset.append(fechas1)
@@ -216,13 +214,22 @@ def getFechaRangoTemperatura(spark, weather_dataset):
     return cpSector_filters_dataset
 
 
-def ventasTemperatura(spark, cards_dataset, weather_dataset):
-    fechas = getFechaRangoTemperatura(spark, weather_dataset)
+def ventasTemperatura(spark, cards_dataset, arrayFechas):
     ventas = 0
     cards = cards_dataset
     cards.createOrReplaceTempView("cards")
-    for fecha in fechas:
-        absa = spark.sql("SELECT * FROM cards WHERE FECHA = %s", (fecha)).count()
+    for fecha in arrayFechas:
+        print(fecha)
+        print(type(fecha))
+
+        year = fecha.strftime("%Y")
+        month = fecha.strftime("%m")
+        day = fecha.strftime("%d")
+
+        consu = 'SELECT * FROM cards WHERE DIA == \"'
+        fec = year+'-'+month+'-'+day+'\";'
+        consulta = consu + fec
+        absa = spark.sql(consulta).count()
         ventas += absa
     return ventas
 
