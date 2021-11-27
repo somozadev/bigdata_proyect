@@ -27,7 +27,7 @@ def main():
     cards_dataset = ValueTypesSetup(cards_dataset)
     weather_dataset = ValueTypesSetup_weather(weather_dataset)
 
-    st.write(getFechaRangoTemperatura(spark, 0.0, 5.0, weather_dataset))
+    #st.write(getFechaRangoTemperatura(spark, 0.0, 5.0, weather_dataset))
 
     components.iframe("https://api.mapbox.com/styles/v1/somozadev/ckw8o8s8l048914rrmowskqoy.html?title=false&access_token=pk.eyJ1Ijoic29tb3phZGV2IiwiYSI6ImNrdzU4b3V4ZmVtOGsybnM3YXF4ZzZzOW4ifQ.b6Pq5mbghDbGzNDuyR-rxQ&zoomwheel=false#13/36.842566/-2.462058", width= 720, height= 500,scrolling = False)    
 
@@ -109,10 +109,7 @@ def main():
             st.write(i[1],(getPercentaje(i[0].count(), cards_dataset.count())),"%")
             st.progress(int(getPercentaje(i[0].count(), cards_dataset.count())))
     
-
-     
     #getSoldsByCommerce(cards_dataset,'04006')
-
 
 
 def ValueTypesSetup(database):
@@ -190,14 +187,22 @@ def getSectorFiltersDataset(cards_dataset): #crea una lista de tuplas (dataset,n
 
     return sector_filters_dataset
 
-def getFechaRangoTemperatura(spark, inta, intb, weather_dataset):
+def getFechaRangoTemperatura(spark, weather_dataset):
     database = weather_dataset
     database.createOrReplaceTempView("database")
-    fechas = spark.sql("SELECT FECHA FROM database WHERE TMed >= %i AND TMed < %i", (inta, intb))
-    return fechas
+    fechas0 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 0.0 AND TMed < 10.0")
+    fechas1 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 10.01 AND TMed < 20.0")
+    fechas2 = spark.sql("SELECT FECHA FROM database WHERE TMed >= 20.01 AND TMed < 30.0")
+
+    cpSector_filters_dataset = [
+        (database.count(),'CARDS'),
+        (fechas0, 'rango 0-10'),
+        (fechas1, 'rango 10-20'),
+        (fechas2, 'rango 20-30')]
+    return cpSector_filters_dataset
 
 def ventasTemperatura(spark, fechas, cards_dataset, inta, intb, weather_dataset):
-    array_fechas = [getFechaRangoTemperatura(spark, inta, intb, weather_dataset)]
+    array_fechas = [getFechaRangoTemperatura(spark, weather_dataset)]
     ventas = 0
     cards = cards_dataset
     cards.createOrReplaceTempView("cards")
@@ -227,6 +232,7 @@ def getCpComercioFiltersDataset(cards_dataset): #crea una lista de tuplas (datas
 def getSoldsByCommerce(dataset,comercio):
     cp = getDataframe_CpComercioFilter(dataset, comercio)
     cp.show()
+
 def getDataframe_CpComercioFilter(dataset, filter): #filtra el sector de la dataset dada en base al tipo (filter) pasado
     return dataset.filter(F.col('CP_COMERCIO') == filter)
 #endregion
