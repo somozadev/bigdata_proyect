@@ -28,30 +28,6 @@ def main():
     weather_dataset = ValueTypesSetup_weather(weather_dataset)
 
 
-    listaDataframes = getFechaRangoTemperatura(spark, weather_dataset)
-
-    listaFechasRango0 = list(listaDataframes[0].select('FECHA').toPandas()['FECHA'])
-    listaFechasRango1 = list(listaDataframes[1].select('FECHA').toPandas()['FECHA'])
-    listaFechasRango2 = list(listaDataframes[2].select('FECHA').toPandas()['FECHA'])
-    listaFechasRango3 = list(listaDataframes[3].select('FECHA').toPandas()['FECHA'])
-
-
-    ventas0 = ventasTemperatura(spark, cards_dataset, listaFechasRango0)
-    ventas1 = ventasTemperatura(spark, cards_dataset, listaFechasRango1)
-    ventas2 = ventasTemperatura(spark, cards_dataset, listaFechasRango2)
-    ventas3 = ventasTemperatura(spark, cards_dataset, listaFechasRango3)
-
-
-    df_ventas = pd.DataFrame(columns=['Temperatura', 'Ventas'])
-    temperatura = ['0°C-15°C', '15.01°C-20°C', '20.01°C-25°C', '25.01°C-30°C']
-    ventas = [ventas0, ventas1, ventas2, ventas3]
-
-    df_ventas['Temperatura'] = temperatura
-    df_ventas['Ventas'] = ventas
-
-    fig2 = px.pie(df_ventas, values='Ventas', names='Temperatura')
-    st.plotly_chart(fig2, use_container_width=True)
-
     #st.write(data[0].show(10))
 
     #st.write(ventasTemperatura(spark, cards_dataset, weather_dataset))
@@ -138,6 +114,29 @@ def main():
             st.progress(int(getPercentaje(i[0].count(), cards_dataset.count())))
     
     #getSoldsByCommerce(cards_dataset,'04006')
+    with st.expander("Gráfica de ventas por temperatura"):
+        listaDataframes = getFechaRangoTemperatura(spark, weather_dataset)
+
+        listaFechasRango0 = list(listaDataframes[0].select('FECHA').toPandas()['FECHA'])
+        listaFechasRango1 = list(listaDataframes[1].select('FECHA').toPandas()['FECHA'])
+        listaFechasRango2 = list(listaDataframes[2].select('FECHA').toPandas()['FECHA'])
+        listaFechasRango3 = list(listaDataframes[3].select('FECHA').toPandas()['FECHA'])
+
+        ventas0 = ventasTemperatura(spark, cards_dataset, listaFechasRango0)
+        ventas1 = ventasTemperatura(spark, cards_dataset, listaFechasRango1)
+        ventas2 = ventasTemperatura(spark, cards_dataset, listaFechasRango2)
+        ventas3 = ventasTemperatura(spark, cards_dataset, listaFechasRango3)
+
+        df_ventas = pd.DataFrame(columns=['Temperatura', 'Ventas'])
+        temperatura = ['0°C-15°C', '15.01°C-20°C', '20.01°C-25°C', '25.01°C-30°C']
+        ventas = [ventas0, ventas1, ventas2, ventas3]
+
+        df_ventas['Temperatura'] = temperatura
+        df_ventas['Ventas'] = ventas
+
+        fig2 = px.pie(df_ventas, values='Ventas', names='Temperatura')
+        st.plotly_chart(fig2, use_container_width=True)
+
 
 
 def ValueTypesSetup(database):
